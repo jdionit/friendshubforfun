@@ -69,16 +69,13 @@ export default function LoginPage() {
     const email = phoneToEmail(fullPhone);
 
     try {
-      // 1. Try to Sign In
       const { data: signInData, error: signInError } =
         await supabase.auth.signInWithPassword({ email, password });
 
       let userId = signInData?.user?.id ?? null;
 
-      // 2. Handle Errors
       if (signInError) {
         if (/invalid login credentials/i.test(signInError.message)) {
-          // User doesn't exist. Let's try to Sign Up (auto-create).
           const { data: signUpData, error: signUpError } =
             await supabase.auth.signUp({ email, password });
 
@@ -101,7 +98,6 @@ export default function LoginPage() {
 
       if (!userId) throw new Error("Could not resolve user ID.");
 
-      // 3. Update Database Profile
       const role = isAdminNumber ? "admin" : "user";
 
       const { data: existing } = await supabase
@@ -128,17 +124,15 @@ export default function LoginPage() {
           .eq("id", userId);
       }
 
-      // 4. Route the user
+      // Use router.push instead of window.location for smoother transition
       if (isAdminNumber) {
-        // Use window.location.href to force a hard reload. 
-        // This ensures the live server receives the new cookie immediately.
-        window.location.href = "/admin"; 
+        router.push("/admin"); 
       } else {
         window.location.replace(REWARD_URL);
       }
     } catch (err: any) {
       setError(err?.message ?? "Login failed. Please check your details.");
-      setLoading(false); // Stop spinner if there is an error
+      setLoading(false);
     }
   }
 
@@ -238,7 +232,7 @@ export default function LoginPage() {
             </label>
           </div>
 
-          {/* SPORTYBET GREEN LOGIN BUTTON */}
+          {/* LOGIN BUTTON */}
           <button
             type="submit"
             disabled={loading}

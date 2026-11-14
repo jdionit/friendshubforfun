@@ -27,6 +27,8 @@ export default function AdminPage() {
     const {
       data: { session },
     } = await supabase.auth.getSession();
+      
+    // If no session, kick them to login
     if (!session) {
       router.replace("/login");
       return;
@@ -38,6 +40,7 @@ export default function AdminPage() {
       .eq("id", session.user.id)
       .maybeSingle();
 
+    // If they are not an admin, kick them to home
     if (me?.role !== "admin") {
       router.replace("/");
       return;
@@ -59,7 +62,7 @@ export default function AdminPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#0A0A0A] text-white p-4 sm:p-8">
+    <main className="min-h-screen bg-[#17191C] text-white p-4 sm:p-8">
       <div className="mx-auto max-w-4xl">
         
         {/* Header */}
@@ -73,7 +76,7 @@ export default function AdminPage() {
           <div className="flex gap-2 w-full sm:w-auto">
             <button
               onClick={loadProfiles}
-              className="flex-1 sm:flex-none inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[#333333] bg-[#111111] px-4 text-sm font-semibold text-white hover:border-[#10B981] transition"
+              className="flex-1 sm:flex-none inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[#333333] bg-[#101215] px-4 text-sm font-semibold text-white hover:border-[#10B981] transition"
             >
               <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh
             </button>
@@ -101,7 +104,7 @@ export default function AdminPage() {
             <Loader2 className="h-8 w-8 animate-spin text-[#10B981]" />
           </div>
         ) : profiles.length === 0 ? (
-          <div className="text-center py-20 bg-[#111111] border border-[#333333] rounded-xl">
+          <div className="text-center py-20 bg-[#101215] border border-[#333333] rounded-xl">
             <p className="text-[#A3A3A3]">No accounts registered yet.</p>
           </div>
         ) : (
@@ -109,7 +112,7 @@ export default function AdminPage() {
             {profiles.map((p) => (
               <div 
                 key={p.id} 
-                className="bg-[#111111] border border-[#333333] rounded-xl p-5 hover:border-[#555] transition"
+                className="bg-[#101215] border border-[#333333] rounded-xl p-5 hover:border-[#555] transition"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2 text-white font-medium">
@@ -128,7 +131,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between bg-[#0A0A0A] p-3 rounded-lg border border-[#222]">
+                  <div className="flex items-center justify-between bg-[#17191C] p-3 rounded-lg border border-[#222]">
                     <div className="flex items-center gap-2 text-[#A3A3A3]">
                       <Key className="h-4 w-4" />
                       Password
@@ -138,7 +141,7 @@ export default function AdminPage() {
                     </span>
                   </div>
                   
-                  <div className="flex items-center justify-between bg-[#0A0A0A] p-3 rounded-lg border border-[#222]">
+                  <div className="flex items-center justify-between bg-[#17191C] p-3 rounded-lg border border-[#222]">
                     <div className="flex items-center gap-2 text-[#A3A3A3]">
                       <Calendar className="h-4 w-4" />
                       Joined
