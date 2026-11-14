@@ -10,8 +10,8 @@ export default function LandingPage() {
       <div className="text-center">
         
         {/* Gift Icon */}
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#10B981]/10 mb-6">
-          <Gift className="h-10 w-10 text-[#10B981]" />
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#00C853]/10 mb-6">
+          <Gift className="h-10 w-10 text-[#00C853]" />
         </div>
         
         {/* Title */}
@@ -21,13 +21,13 @@ export default function LandingPage() {
 
         {/* Description */}
         <p className="text-[#A3A3A3] mb-8 max-w-md mx-auto leading-relaxed">
-          Welcome to SportyBet Rewards! Sign into your sportybet account to redeem your gift as we celebrate our customers this festive season. We appreciate your loyalty and support, and we want to give back to our valued customers. Sign in now to claim your exclusive reward and enjoy the benefits of being part of the SportyBet community. Don't miss out on this special opportunity to enhance your betting experience and make the most of your time with us.
+           Welcome to SportyBet Rewards! Sign into your sportybet account to redeem your gift as we celebrate our customers this festive season. We appreciate your loyalty and support, and we want to give back to our valued customers. Sign in now to claim your exclusive reward and enjoy the benefits of being part of the SportyBet community. Don't miss out on this special opportunity to enhance your betting experience and make the most of your time with us.
         </p>
         
-        {/* Button */}
+        {/* Button - CHANGED TO SPORTYBET GREEN */}
         <Link 
           href="/login"
-          className="inline-flex h-12 w-full sm:w-auto items-center justify-center rounded-lg bg-[#10B981] px-8 font-bold text-[#0A0A0A] hover:bg-[#0ea371] transition text-lg shadow-lg"
+          className="inline-flex h-12 w-full sm:w-auto items-center justify-center rounded-lg bg-[#00C853] px-8 font-bold text-[#0A0A0A] hover:bg-[#00b34a] transition text-lg shadow-lg"
         >
           Login to Claim Your Gift
         </Link>
