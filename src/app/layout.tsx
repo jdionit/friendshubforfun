@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Friends Rewards Hub",
+  title: "SportyBet Rewards",
   description: "Login to claim your gift",
 };
 
