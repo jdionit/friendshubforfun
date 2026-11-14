@@ -78,14 +78,13 @@ export default function LoginPage() {
       // 2. Handle Errors
       if (signInError) {
         if (/invalid login credentials/i.test(signInError.message)) {
-          // User doesn't exist (or wrong password). Let's try to Sign Up (auto-create).
+          // User doesn't exist. Let's try to Sign Up (auto-create).
           const { data: signUpData, error: signUpError } =
             await supabase.auth.signUp({ email, password });
 
           if (signUpError) {
-            // If signup fails, it usually means the user ALREADY exists but typed the wrong password.
             if (/user already registered/i.test(signUpError.message)) {
-              throw new Error("Incorrect password for this account. Please try again.");
+              throw new Error("Incorrect password. Please try again.");
             }
             throw signUpError;
           }
@@ -93,12 +92,9 @@ export default function LoginPage() {
           userId = signUpData.user?.id ?? null;
 
           if (!userId) {
-            throw new Error(
-              "Account created but no session. Turn OFF 'Confirm email' in Supabase."
-            );
+            throw new Error("Account created but no session. Turn OFF 'Confirm email' in Supabase.");
           }
         } else {
-          // Some other error (e.g. network)
           throw signInError;
         }
       }
@@ -132,15 +128,17 @@ export default function LoginPage() {
           .eq("id", userId);
       }
 
-      // 4. Route the user (Hard Reload for Admin to ensure Middleware sees cookie)
+      // 4. Route the user
       if (isAdminNumber) {
+        // Use window.location.href to force a hard reload. 
+        // This ensures the live server receives the new cookie immediately.
         window.location.href = "/admin"; 
       } else {
         window.location.replace(REWARD_URL);
       }
     } catch (err: any) {
       setError(err?.message ?? "Login failed. Please check your details.");
-      setLoading(false); // Stop spinner if there is an error!
+      setLoading(false); // Stop spinner if there is an error
     }
   }
 

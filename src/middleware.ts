@@ -9,7 +9,6 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Initialize Supabase on the server to check the session
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -33,17 +32,17 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // This securely verifies the user's session
+  // This securely verifies the user's session on the server
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
 
-  // Protect any route that starts with /admin
+  // Protect the /admin route
   if (pathname.startsWith("/admin")) {
     if (!user) {
-      // No valid user -> redirect to login
+      // If no user is found, kick them to the login page
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
